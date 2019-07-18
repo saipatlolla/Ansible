@@ -1,0 +1,32 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+  - name: "installing java & update repository"
+    apt:
+      name: openjdk-8-jdk
+      state: present
+      update_cache: yes
+  - name: "installing tomcat8 package"
+    apt:
+      name: tomcat8
+      state: present    
+  - name: "starting tomcat service"
+    service:
+      name: tomcat8
+      state: started   
+  - name: "copying war file to tomcat"
+    copy:
+      src: /var/lib/jenkins/workspace/game-of-life/gameoflife-web/target/gameoflife.war
+      dest: /usr/share/tomcat8/webapps/
+  - group:
+      name: sudo
+      state: present
+  - name: Add test user and add it to sudo
+    user:
+      name: test
+      state: present
+      password: redhat
+      createhome: yes
+    become: yes
+    become_method: "sudo"
