@@ -1,0 +1,37 @@
+{
+    "variables":{
+        "aws_access_key": "",
+        "aws_secret_key": "",
+        "aws_region": ""
+    },
+
+    "builders":[{
+        "type": "amazon-ebs",
+        "access_key": "{{user `aws_access_key`}}",
+        "secret_key": "{{user `aws_secret_key`}}",
+        "ami_name": "packer_demo",
+        "instance_type": "t2.micro",
+        "region": "{{user `aws_region`}}",
+        "source_ami": "ami-07b4f3c02c7f83d59",
+        "ssh_username": "ubuntu"
+    }],
+
+    "provisioners":[{
+         "type": "shell",
+         "inline":[
+             "sudo apt-get update",
+	     "sudo apt install software-properties-common",
+	     "sudo add-apt-repository ppa:deadsnakes/ppa -y",
+	     "sudo apt install python -y",
+             "sudo sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config"
+         ]
+       },
+
+     {
+
+         "type": "ansible",
+         "playbook_file": "/home/ubuntu/install.yml"
+     }
+
+    ]
+}
